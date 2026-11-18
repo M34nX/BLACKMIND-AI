@@ -1,0 +1,1 @@
+"""BLACKMIND-AI application package."""
