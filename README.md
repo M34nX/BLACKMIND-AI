@@ -2,16 +2,17 @@
 
 A focused AI software-engineering assistant for planning, writing, explaining, refactoring, debugging, and reviewing code.
 
-## Foundation
+## Current capabilities
 
 - FastAPI service with health and coding-task endpoints.
 - OpenAI-compatible model adapter; provider and model are configurable.
-- Three-stage workflow: **Planner → Engineer → Reviewer**.
+- Multi-stage workflow: **Project Context → Planner → Engineer → Reviewer**.
+- Accepts up to 30 virtual source files as project context, with path, secret-file, binary-content, and size validation.
 - Structured output containing a plan, implementation, and independent review.
 - Environment-based secrets; no credentials are committed.
-- Defensive-use policy. Generated code is returned as text and is never executed by this service.
+- Generated code is returned as text and is never executed by this service.
 
-> This is a runnable software foundation, not a trained model or an autonomous software engineer. Configure a compatible model endpoint and API key before using code generation.
+> This is a software foundation, not a trained model or an autonomous software engineer. Configure a compatible model endpoint and API key before using code generation.
 
 ## Quick start
 
@@ -40,13 +41,31 @@ Open `http://127.0.0.1:8000/docs`.
 
 ```json
 {
-  "task": "Write a Python function that merges two sorted lists.",
+  "task": "Find why the login form validation is failing and propose a fix.",
   "language": "python",
-  "context": "Prefer readable code and type hints."
+  "context": "Keep the public API backwards compatible.",
+  "project_files": [
+    {
+      "path": "app/validators.py",
+      "content": "def validate_email(value):\n    return '@' in value\n"
+    },
+    {
+      "path": "tests/test_validators.py",
+      "content": "def test_email_validation():\n    assert validate_email('a@example.com')\n"
+    }
+  ]
 }
 ```
 
 Response fields: `plan`, `implementation`, and `review`.
+
+Project context limits:
+- Up to 30 files per request.
+- Up to 16,000 characters per file.
+- Up to 50,000 characters total across file paths and contents.
+- Absolute paths, traversal paths, VCS/dependency folders, common secret files, private-key files, and binary content are rejected.
+
+Only submit source files you are authorized to share. Do not include credentials, tokens, or private keys in source content.
 
 ## Configuration
 
