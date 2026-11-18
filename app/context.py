@@ -38,7 +38,7 @@ def validate_project_file(path: str, content: str) -> ProjectFile:
         raise ValueError("Generated context cannot include dependency or VCS directories.")
 
     filename = parsed.name.lower()
-    if filename in _BLOCKED_NAMES or filename.endswith((".pem", ".key", ".p12", ".pfx")):
+    if filename in _BLOCKED_NAMES or filename.startswith(".env") or filename.endswith((".pem", ".key", ".p12", ".pfx")):
         raise ValueError("Secret and private-key files must not be submitted.")
 
     if "\x00" in content:
